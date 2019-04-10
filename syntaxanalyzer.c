@@ -4,6 +4,7 @@
 /* Global declarations */
 /* Variables */
 int charClass;
+int read;
 char lexeme[100];
 int lexLen;
 char nextChar;
@@ -16,26 +17,75 @@ FILE * MyFile;
 
 #define IDENT 11
 #define INT_LIT 10
+#define ASSIGN_OP 20
+#define ADD_OP 21
+#define SUB_OP 22
+#define MULT_OP 23
+#define DIV_OP 24
+#define LEFT_PAREN 25
+#define RIGHT_PAREN 26
 
 /* prototypes */
 void getChar();
 void addChar();
 int lex();
+int lookup(char);
 void getNonBlank();
+void getLine();
+
 int main () {
 	/* open input data file */
 	
 	MyFile = fopen("arith.txt", "r");
 	// singleLine holds the line retrieved from the data file
-	char singleLine[150];
+	
 	getChar();
+	do {
+		lex();
+
+	} while (nextToken != EOF);
+
+	lex();
 	fclose(MyFile);
+}
+
+int lookup (char ch) {
+	switch (ch) {
+		case '(':
+			addChar();
+			nextToken = LEFT_PAREN;
+			break;
+		case ')':
+			addChar();
+			nextToken = RIGHT_PAREN;
+			break;
+		case '+':
+			addChar();
+			nextToken = ADD_OP;
+			break;
+		case '-':
+			addChar();
+			nextToken = SUB_OP;
+		case '*':
+			addChar();
+			nextToken = MULT_OP;
+		case '/':
+			addChar();
+			nextToken = DIV_OP;
+		default:
+			addChar();
+			nextToken = EOF;
+			break;
+
+	}
+	return nextToken;
 }
 
 void addChar() {
 	if (lexLen <= 98)  {
 		lexeme[lexLen++] = nextChar;
 		lexeme[lexLen] = 0;
+		printf("Lexeme: %s\n", lexeme );
 	}
 	else printf("%s\n", "Error - lexeme is too long." );
 }
@@ -43,19 +93,13 @@ void getChar() {
 		if ((nextChar = getc(MyFile)) != EOF) {
 			if (isalpha(nextChar)) {
 				charClass = LETTER;
-				printf("%s\n", "This a letter." );
-				printf("%c\n", nextChar);
 			}
 
 			else if (isdigit(nextChar)) {
 				charClass = DIGIT;
-				printf("%s\n", "This a digit" );
-				printf("%c\n", nextChar);
 			}
 			else {
 				charClass = UNKNOWN; 
-				printf("%s\n", "Unknown character." );
-				printf("%c\n", nextChar);
 			}
 		}
 		else 
@@ -93,10 +137,12 @@ int lex() {
 			break;
 
 		case UNKNOWN:
-			//lookup(nextChar);
+			lookup(nextChar);
 			getChar();
 			break;
+
 		case EOF:
+			printf("%s\n","Token is EOF");
 			nextToken = EOF;
 			lexeme[0] = 'E';
 			lexeme[1] = 'O';
@@ -105,6 +151,6 @@ int lex() {
 			break;
 
 	}
-	
-	return 0;
+	printf("Next token is: %d, Next lexeme is %s\n", nextToken, lexeme);
+	return nextToken;
 }
