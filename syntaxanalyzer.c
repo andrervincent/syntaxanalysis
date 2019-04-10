@@ -35,6 +35,9 @@ void getLine();
 void expr();
 void term();
 void factor();
+void expr();
+void term();
+void factor();
 
 int main () {
 	/* open input data file */
@@ -45,13 +48,56 @@ int main () {
 	// singleLine holds the line retrieved from the data file
 	else {
 	getChar();
-	while (!feof(MyFile))
+	while (!feof(MyFile)){
 		lex();
+
+	}
 	lex();
 	}
 	fclose(MyFile);
 }
 
+void expr() {
+	printf("Enter <expr>\n");
+
+	term();
+
+	while (nextToken == ADD_OP || nextToken == SUB_OP) {
+		lex();
+		term();
+	}
+	printf("Exit <expr>\n");
+}
+
+void term() {
+	printf("Enter <term>\n");
+
+	factor();
+	while (nextToken == MULT_OP || nextToken == DIV_OP) {
+		lex();
+		factor();
+	}
+	printf("Exit <term>\n");
+}
+
+void factor() {
+	printf("Enter <factor>\n");
+
+	if (nextToken == IDENT || nextToken == INT_LIT)
+		lex();
+	else {
+		if (nextToken == LEFT_PAREN) {
+			lex();
+			expr();
+			if (nextToken == RIGHT_PAREN)
+				lex();
+			else
+				printf("Error found.\n");
+		}
+		else printf("Error found. \n");
+	}
+	printf("Exit <factor>\n");
+}
 int lookup (char ch) {
 	switch (ch) {
 		case '(':
@@ -154,5 +200,6 @@ int lex() {
 
 	}
 	printf("Next token is: %d, Next lexeme is %s\n", nextToken, lexeme);
+	expr();
 	return nextToken;
 }
