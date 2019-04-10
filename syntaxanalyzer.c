@@ -32,20 +32,23 @@ int lex();
 int lookup(char);
 void getNonBlank();
 void getLine();
+void expr();
+void term();
+void factor();
 
 int main () {
 	/* open input data file */
 	
-	MyFile = fopen("arith.txt", "r");
+	if ((MyFile = fopen("arith.txt", "r")) == NULL) {
+		printf("%s\n", "ERROR - cannot open file.");
+	}
 	// singleLine holds the line retrieved from the data file
-	
+	else {
 	getChar();
-	do {
+	while (!feof(MyFile))
 		lex();
-
-	} while (nextToken != EOF);
-
 	lex();
+	}
 	fclose(MyFile);
 }
 
@@ -85,7 +88,6 @@ void addChar() {
 	if (lexLen <= 98)  {
 		lexeme[lexLen++] = nextChar;
 		lexeme[lexLen] = 0;
-		printf("Lexeme: %s\n", lexeme );
 	}
 	else printf("%s\n", "Error - lexeme is too long." );
 }
@@ -105,6 +107,7 @@ void getChar() {
 		else 
 			charClass = EOF;
 	}
+
 // Function to skip over spaces	
 void getNonBlank() {
 	while (isspace(nextChar))
@@ -142,7 +145,6 @@ int lex() {
 			break;
 
 		case EOF:
-			printf("%s\n","Token is EOF");
 			nextToken = EOF;
 			lexeme[0] = 'E';
 			lexeme[1] = 'O';
