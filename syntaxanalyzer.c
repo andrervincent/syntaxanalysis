@@ -4,20 +4,53 @@
 /* Global declarations */
 /* Variables */
 int charClass;
-char lexeme[100];
-char nextChar;
 int lexLen;
-int token;
+char nextChar;
+FILE * MyFile;
+
+#define LETTER 0
+#define DIGIT 1
+#define UNKNOWN 99
+
+/* prototypes */
+void getChar();
+int lex();
+void getNonBlank();
 int main () {
 	/* open input data file */
-	FILE * MyFile;
+	
 	MyFile = fopen("arith.txt", "r");
 	// singleLine holds the line retrieved from the data file
 	char singleLine[150];
-	while (!feof(MyFile)) {
-		fgets(singleLine, 150, MyFile);
-		printf("%s\n", singleLine );
-	}
-
+	getChar();
 	fclose(MyFile);
+}
+
+void getChar() {
+		if ((nextChar = getc(MyFile)) != EOF) {
+			if (isalpha(nextChar)) {
+				charClass = LETTER;
+				printf("%s\n", "This a letter." );
+			}
+
+			else if (isdigit(nextChar)) {
+				charClass = DIGIT;
+				printf("%s\n", "This a digit" );
+			}
+			else {
+				charClass = UNKNOWN; 
+				printf("%s\n", "Unknown character." );
+			}
+		}
+		else 
+			charClass = EOF;
+	}
+void getNonBlank() {
+	while (isspace(nextChar))
+		getChar();
+}	
+int lex() {
+	lexLen = 0;
+	getNonBlank();
+	return 0;
 }
